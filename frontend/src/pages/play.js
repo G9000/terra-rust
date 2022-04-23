@@ -81,13 +81,13 @@ const Play = () => {
         <div className="game-container">
           {/* CHANGE THIS IMAGE! It's loaded from the public folder. */}
           <img
-            src={"pepe.png"}
+            src={"demon.png"}
             id="target"
             alt="Target"
             style={{ ...targetPosition }}
             onClick={handleClick}
           />
-          <img src="Marine.png" id="marine-img" alt="Marine" />
+          <img src="doom.png" id="doom-img" alt="Doomguy" />
         </div>
       )}
     </div>
