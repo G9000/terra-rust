@@ -1,77 +1,71 @@
-import './App.css'
+import "./App.css";
+import { useWallet, WalletStatus } from "@terra-money/wallet-provider";
 
-import { useEffect, useState } from 'react'
-import {
-  useWallet,
-  useConnectedWallet,
-  WalletStatus,
-} from '@terra-money/wallet-provider'
-
-import * as execute from './contract/execute'
-import * as query from './contract/query'
-import { ConnectWallet } from './components/ConnectWallet'
+// Here's the new import for the file we just added
+import Menu from "./components/Menu";
 
 function App() {
-  const [count, setCount] = useState(null)
-  const [updating, setUpdating] = useState(true)
-  const [resetValue, setResetValue] = useState(0)
+  const { status, connect, disconnect, availableConnectTypes } = useWallet();
 
-  const { status } = useWallet()
+  console.log("Wallet status is ", status);
+  console.log("Available connection types:", availableConnectTypes);
 
-  const connectedWallet = useConnectedWallet()
-
-  useEffect(() => {
-    const prefetch = async () => {
-      if (connectedWallet) {
-        setCount((await query.getCount(connectedWallet)).count)
-      }
-      setUpdating(false)
-    }
-    prefetch()
-  }, [connectedWallet])
-
-  const onClickIncrement = async () => {
-    setUpdating(true)
-    await execute.increment(connectedWallet)
-    setCount((await query.getCount(connectedWallet)).count)
-    setUpdating(false)
-  }
-
-  const onClickReset = async () => {
-    setUpdating(true)
-    console.log(resetValue)
-    await execute.reset(connectedWallet, resetValue)
-    setCount((await query.getCount(connectedWallet)).count)
-    setUpdating(false)
-  }
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <div style={{ display: 'inline' }}>
-          COUNT: {count} {updating ? '(updating . . .)' : ''}
-          <button onClick={onClickIncrement} type="button">
-            {' '}
-            +{' '}
+  const renderConnectButton = () => {
+    if (status === WalletStatus.WALLET_NOT_CONNECTED) {
+      return (
+        <div className="connect-wallet-div">
+          <button
+            type="button"
+            key={`connect-EXTENSION`}
+            onClick={() => connect("EXTENSION")}
+            className="cta-button connect-wallet-button"
+          >
+            Connect wallet
           </button>
         </div>
-        {status === WalletStatus.WALLET_CONNECTED && (
-          <div style={{ display: 'inline' }}>
-            <input
-              type="number"
-              onChange={(e) => setResetValue(+e.target.value)}
-              value={resetValue}
-            />
-            <button onClick={onClickReset} type="button">
-              {' '}
-              reset{' '}
-            </button>
-          </div>
-        )}
-        <ConnectWallet />
+      );
+    } else if (status === WalletStatus.WALLET_CONNECTED) {
+      return (
+        <button
+          type="button"
+          onClick={() => disconnect()}
+          className="cta-button connect-wallet-button"
+        >
+          Disconnect
+        </button>
+      );
+    }
+  };
+
+  return (
+    <main className="App">
+      <header>
+        <div className="header-titles">
+          <h1>⚔ Goblin War ⚔</h1>
+          <p>Only you can save us from Goblin town</p>
+        </div>
       </header>
-    </div>
-  )
+
+      {/* If not connected, show the goblin GIF! */}
+      {status === WalletStatus.WALLET_NOT_CONNECTED && (
+        <div>
+          <img
+            src="https://media.giphy.com/media/B19AYwNXoXtcs/giphy.gif"
+            alt="Goblin gif"
+          />
+        </div>
+      )}
+
+      {/* Show the menu after connection */}
+      {status === WalletStatus.WALLET_CONNECTED && (
+        <div className="game-menu-container">
+          <Menu />
+        </div>
+      )}
+
+      {renderConnectButton()}
+    </main>
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,5 @@
 import { LCDClient, MsgExecuteContract, Fee } from "@terra-money/terra.js";
-import { contractAdress } from "./address";
+import { contractAddress } from "./address";
 
 // ==== utils ====
 
@@ -20,7 +20,7 @@ const _exec =
       msgs: [
         new MsgExecuteContract(
           wallet.walletAddress,
-          contractAdress(wallet),
+          contractAddress(wallet),
           msg
         ),
       ],
@@ -44,8 +44,5 @@ const _exec =
   };
 
 // ==== execute contract ====
-
-export const increment = _exec({ increment: {} });
-
-export const reset = async (wallet, count) =>
-  _exec({ reset: { count } })(wallet);
+export const setScore = async (wallet, score) =>
+  _exec({ upsert_score: { score } })(wallet);
