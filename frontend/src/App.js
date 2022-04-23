@@ -3,6 +3,7 @@ import { useWallet, WalletStatus } from "@terra-money/wallet-provider";
 
 // Here's the new import for the file we just added
 import Menu from "./components/Menu";
+import WalletAddress from "./components/WalletAddress";
 
 function App() {
   const { status, connect, disconnect, availableConnectTypes } = useWallet();
@@ -44,6 +45,7 @@ function App() {
           <h1>⚔ Goblin War ⚔</h1>
           <p>Only you can save us from Goblin town</p>
         </div>
+        <WalletAddress />
       </header>
 
       {/* If not connected, show the goblin GIF! */}
